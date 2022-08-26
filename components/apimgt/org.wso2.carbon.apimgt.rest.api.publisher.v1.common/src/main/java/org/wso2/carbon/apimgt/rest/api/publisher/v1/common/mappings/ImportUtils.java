@@ -258,6 +258,13 @@ public class ImportUtils {
                     validationResponse.setContent(importedApi.getSwaggerDefinition());
                     validationResponse.setJsonContent(importedApi.getSwaggerDefinition());
                 }
+                if (!apiProvider.isValidContext(importedApi.getId().getProviderName(), importedApi.getId().getApiName(),
+                                                importedApi.getContextTemplate(), userName, organization)) {
+                    String errMsg = "Error occurred while adding the API [" + importedApi.getId().getApiName() + '-'
+                            + importedApi.getId().getVersion()
+                            + "]. Context doesn't match with the previous version(s).";
+                    throw new IOException(errMsg);
+                }
             }
 
             if (!extractedPoliciesMap.isEmpty()) {
@@ -2040,6 +2047,7 @@ public class ImportUtils {
         try {
             JsonElement jsonObject = retrieveValidatedDTOObject(extractedFolderPath, preserveProvider, userName,
                     ImportExportConstants.TYPE_API_PRODUCT);
+
             APIProductDTO importedApiProductDTO = new Gson().fromJson(jsonObject, APIProductDTO.class);
 
             // If the provided dependent APIs params config is null, it means this happening when importing an API (not
