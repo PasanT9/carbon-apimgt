@@ -66,6 +66,13 @@ public class APIProduct implements Serializable {
     private boolean isMonetizationEnabled = false;
     private String versionTimestamp;
 
+    private boolean advertiseOnly;
+    private String apiExternalProductionEndpoint;
+    private String apiExternalSandboxEndpoint;
+    private String apiOwner;
+    private String redirectURL;
+    private String vendor;
+
     /**
      * API security at the gateway level.
      */
@@ -679,5 +686,53 @@ public class APIProduct implements Serializable {
     public void setWorkflowStatus(String workflowStatus) {
 
         this.workflowStatus = workflowStatus;
+    }
+
+    public boolean isAdvertiseOnly() {
+        return advertiseOnly;
+    }
+
+    public void setAdvertiseOnly(boolean advertiseOnly) {
+        this.advertiseOnly = advertiseOnly;
+    }
+
+    public String getApiExternalProductionEndpoint() {
+        return apiExternalProductionEndpoint;
+    }
+
+    public void setApiExternalProductionEndpoint(String apiExternalProductionEndpoint) {
+        this.apiExternalProductionEndpoint = apiExternalProductionEndpoint;
+    }
+
+    public String getApiExternalSandboxEndpoint() {
+        return apiExternalSandboxEndpoint;
+    }
+
+    public void setApiExternalSandboxEndpoint(String apiExternalSandboxEndpoint) {
+        this.apiExternalSandboxEndpoint = apiExternalSandboxEndpoint;
+    }
+
+    public String getApiOwner() {
+        return apiOwner;
+    }
+
+    public void setApiOwner(String apiOwner) {
+        this.apiOwner = apiOwner;
+    }
+
+    public String getRedirectURL() {
+        return redirectURL;
+    }
+
+    public void setRedirectURL(String redirectURL) {
+        this.redirectURL = redirectURL;
+    }
+
+    public String getAdvertiseOnlyAPIVendor() {
+        return vendor;
+    }
+
+    public void setAdvertiseOnlyAPIVendor(String vendor) {
+        this.vendor = vendor;
     }
 }

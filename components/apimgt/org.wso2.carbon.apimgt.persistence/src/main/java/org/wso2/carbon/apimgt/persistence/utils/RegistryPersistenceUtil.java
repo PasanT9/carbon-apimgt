@@ -1474,6 +1474,15 @@ public class RegistryPersistenceUtil {
             artifact.setAttribute(
                     APIConstants.API_OVERVIEW_CACHE_TIMEOUT, Integer.toString(apiProduct.getCacheTimeout()));
 
+            artifact.setAttribute(APIConstants.API_OVERVIEW_REDIRECT_URL, apiProduct.getRedirectURL());
+            artifact.setAttribute(APIConstants.API_OVERVIEW_EXTERNAL_PRODUCTION_ENDPOINT,
+                    apiProduct.getApiExternalProductionEndpoint());
+            artifact.setAttribute(APIConstants.API_OVERVIEW_EXTERNAL_SANDBOX_ENDPOINT,
+                    apiProduct.getApiExternalSandboxEndpoint());
+            artifact.setAttribute(APIConstants.API_OVERVIEW_ADVERTISE_ONLY_API_VENDOR, apiProduct.getAdvertiseOnlyAPIVendor());
+            artifact.setAttribute(APIConstants.API_OVERVIEW_OWNER, apiProduct.getApiOwner());
+            artifact.setAttribute(APIConstants.API_OVERVIEW_ADVERTISE_ONLY, Boolean.toString(apiProduct.isAdvertiseOnly()));
+
             StringBuilder policyBuilder = new StringBuilder();
             for (Tier tier : apiProduct.getAvailableTiers()) {
                 policyBuilder.append(tier.getName());
@@ -1601,6 +1610,14 @@ public class RegistryPersistenceUtil {
             apiProduct.setLastUpdated(registry.get(artifactPath).getLastModified());
             apiProduct.setType(artifact.getAttribute(APIConstants.API_OVERVIEW_TYPE));
             apiProduct.setGatewayVendor(artifact.getAttribute(APIConstants.API_OVERVIEW_GATEWAY_VENDOR));
+            apiProduct.setAdvertiseOnly(Boolean.parseBoolean(artifact.getAttribute(APIConstants.API_OVERVIEW_ADVERTISE_ONLY)));
+            apiProduct.setRedirectURL(artifact.getAttribute(APIConstants.API_OVERVIEW_REDIRECT_URL));
+            apiProduct.setApiExternalProductionEndpoint(artifact.getAttribute(APIConstants
+                    .API_OVERVIEW_EXTERNAL_PRODUCTION_ENDPOINT));
+            apiProduct.setApiExternalSandboxEndpoint(artifact.getAttribute(APIConstants
+                    .API_OVERVIEW_EXTERNAL_SANDBOX_ENDPOINT));
+            apiProduct.setAdvertiseOnlyAPIVendor(artifact.getAttribute(APIConstants.API_OVERVIEW_ADVERTISE_ONLY_API_VENDOR));
+            apiProduct.setApiOwner(artifact.getAttribute(APIConstants.API_OVERVIEW_OWNER));
             String tenantDomainName = MultitenantUtils.getTenantDomain(replaceEmailDomainBack(providerName));
             apiProduct.setTenantDomain(tenantDomainName);
             int tenantId = ServiceReferenceHolder.getInstance().getRealmService().getTenantManager()

@@ -66,6 +66,12 @@ public class PublisherAPIProduct extends PublisherAPIProductInfo {
 
     private String versionTimestamp;
 
+    private String apiExternalProductionEndpoint;
+    private String apiExternalSandboxEndpoint;
+    private String redirectURL;
+    private String apiOwner;
+    private String vendor;
+
     public String getDescription() {
         return description;
     }
@@ -284,6 +290,46 @@ public class PublisherAPIProduct extends PublisherAPIProductInfo {
 
     public void setResponseCache(String responseCache) {
         this.responseCache = responseCache;
+    }
+
+    public String getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(String vendor) {
+        this.vendor = vendor;
+    }
+
+    public String getApiOwner() {
+        return apiOwner;
+    }
+
+    public void setApiOwner(String apiOwner) {
+        this.apiOwner = apiOwner;
+    }
+
+    public String getRedirectURL() {
+        return redirectURL;
+    }
+
+    public void setRedirectURL(String redirectURL) {
+        this.redirectURL = redirectURL;
+    }
+
+    public String getApiExternalSandboxEndpoint() {
+        return apiExternalSandboxEndpoint;
+    }
+
+    public void setApiExternalSandboxEndpoint(String apiExternalSandboxEndpoint) {
+        this.apiExternalSandboxEndpoint = apiExternalSandboxEndpoint;
+    }
+
+    public String getApiExternalProductionEndpoint() {
+        return apiExternalProductionEndpoint;
+    }
+
+    public void setApiExternalProductionEndpoint(String apiExternalProductionEndpoint) {
+        this.apiExternalProductionEndpoint = apiExternalProductionEndpoint;
     }
 /*
     private String inSequence;

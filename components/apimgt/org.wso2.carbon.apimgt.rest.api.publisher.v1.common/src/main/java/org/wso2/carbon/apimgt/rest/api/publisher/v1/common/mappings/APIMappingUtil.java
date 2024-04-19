@@ -2305,6 +2305,7 @@ public class APIMappingUtil {
             productDto.setTechnicalOwner(apiProduct.getTechnicalOwner());
             productDto.setTechnicalOwnerEmail(apiProduct.getTechnicalOwnerEmail());
             productDto.setMonetizedInfo(apiProduct.isMonetizationEnabled());
+            productDto.setAdvertiseOnly(apiProduct.isAdvertiseOnly());
 
             list.add(productDto);
         }
@@ -2349,6 +2350,17 @@ public class APIMappingUtil {
         productDto.setIsRevision(product.isRevision());
         productDto.setRevisionedApiProductId(product.getRevisionedApiProductId());
         productDto.setRevisionId(product.getRevisionId());
+
+        AdvertiseInfoDTO advertiseInfoDTO = new AdvertiseInfoDTO();
+        advertiseInfoDTO.setAdvertised(product.isAdvertiseOnly());
+        advertiseInfoDTO.setApiExternalProductionEndpoint(product.getApiExternalProductionEndpoint());
+        advertiseInfoDTO.setApiExternalSandboxEndpoint(product.getApiExternalSandboxEndpoint());
+        advertiseInfoDTO.setOriginalDevPortalUrl(product.getRedirectURL());
+        advertiseInfoDTO.setApiOwner(product.getApiOwner());
+        if (product.getAdvertiseOnlyAPIVendor() != null) {
+            advertiseInfoDTO.setVendor(AdvertiseInfoDTO.VendorEnum.valueOf(product.getAdvertiseOnlyAPIVendor()));
+        }
+        productDto.setAdvertiseInfo(advertiseInfoDTO);
 
         if (APIConstants.ENABLED.equals(product.getResponseCache())) {
             productDto.setResponseCachingEnabled(Boolean.TRUE);
@@ -2726,6 +2738,16 @@ public class APIMappingUtil {
 
         //attach api categories to API model
         setAPICategoriesToModel(dto, product, provider);
+
+        if (dto.getAdvertiseInfo() != null) {
+            AdvertiseInfoDTO advertiseInfoDTO = dto.getAdvertiseInfo();
+            product.setAdvertiseOnly(advertiseInfoDTO.isAdvertised());
+            product.setApiExternalProductionEndpoint(advertiseInfoDTO.getApiExternalProductionEndpoint());
+            product.setApiExternalSandboxEndpoint(advertiseInfoDTO.getApiExternalSandboxEndpoint());
+            product.setRedirectURL(advertiseInfoDTO.getOriginalDevPortalUrl());
+            product.setApiOwner(advertiseInfoDTO.getApiOwner());
+            product.setAdvertiseOnlyAPIVendor(dto.getAdvertiseInfo().getVendor().value());
+        }
         return product;
     }
 
