@@ -9667,6 +9667,9 @@ components:
         TechnicalOwnerEmail:
           type: string
           example: technicalowner@abc.com
+        advertiseOnly:
+          type: boolean
+          example: true
     APIProduct:
       title: API Product object
       required:
@@ -9886,6 +9889,8 @@ components:
           type: string
         lastUpdatedTimestamp:
           type: string
+        advertiseInfo:
+          $ref: '#/components/schemas/AdvertiseInfo'
         gatewayVendor:
           title: field to identify gateway vendor
           type: string
@@ -11706,6 +11711,9 @@ components:
             thumbnailUri:
               type: string
               example: /apis/01234567-0123-0123-0123-012345678901/thumbnail
+            advertiseOnly:
+              type: boolean
+              example: true
             hasThumbnail:
               type: boolean
               example: true

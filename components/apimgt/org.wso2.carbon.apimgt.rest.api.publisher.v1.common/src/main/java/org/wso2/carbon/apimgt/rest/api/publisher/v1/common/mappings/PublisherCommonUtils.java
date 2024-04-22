@@ -1832,7 +1832,8 @@ public class PublisherCommonUtils {
         List<String> tiersFromDTO = apiProductDtoToUpdate.getPolicies();
         if (apiSecurity.contains(APIConstants.DEFAULT_API_SECURITY_OAUTH2) || apiSecurity
                 .contains(APIConstants.API_SECURITY_API_KEY)) {
-            if (tiersFromDTO == null || tiersFromDTO.isEmpty()) {
+            if ((tiersFromDTO == null || tiersFromDTO.isEmpty())
+                    && !apiProductDtoToUpdate.getAdvertiseInfo().isAdvertised()) {
                 throw new APIManagementException("No tier defined for the API Product",
                         ExceptionCodes.TIER_CANNOT_BE_NULL);
             }

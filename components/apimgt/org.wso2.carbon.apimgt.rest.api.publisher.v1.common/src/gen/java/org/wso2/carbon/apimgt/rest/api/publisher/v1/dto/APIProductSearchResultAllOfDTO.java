@@ -26,6 +26,7 @@ public class APIProductSearchResultAllOfDTO   {
     private String provider = null;
     private String status = null;
     private String thumbnailUri = null;
+    private Boolean advertiseOnly = null;
     private Boolean hasThumbnail = null;
     private Boolean monetizedInfo = null;
     private String businessOwner = null;
@@ -138,6 +139,23 @@ public class APIProductSearchResultAllOfDTO   {
   }
   public void setThumbnailUri(String thumbnailUri) {
     this.thumbnailUri = thumbnailUri;
+  }
+
+  /**
+   **/
+  public APIProductSearchResultAllOfDTO advertiseOnly(Boolean advertiseOnly) {
+    this.advertiseOnly = advertiseOnly;
+    return this;
+  }
+
+  
+  @ApiModelProperty(example = "true", value = "")
+  @JsonProperty("advertiseOnly")
+  public Boolean isAdvertiseOnly() {
+    return advertiseOnly;
+  }
+  public void setAdvertiseOnly(Boolean advertiseOnly) {
+    this.advertiseOnly = advertiseOnly;
   }
 
   /**
@@ -258,6 +276,7 @@ public class APIProductSearchResultAllOfDTO   {
         Objects.equals(provider, apIProductSearchResultAllOf.provider) &&
         Objects.equals(status, apIProductSearchResultAllOf.status) &&
         Objects.equals(thumbnailUri, apIProductSearchResultAllOf.thumbnailUri) &&
+        Objects.equals(advertiseOnly, apIProductSearchResultAllOf.advertiseOnly) &&
         Objects.equals(hasThumbnail, apIProductSearchResultAllOf.hasThumbnail) &&
         Objects.equals(monetizedInfo, apIProductSearchResultAllOf.monetizedInfo) &&
         Objects.equals(businessOwner, apIProductSearchResultAllOf.businessOwner) &&
@@ -268,7 +287,7 @@ public class APIProductSearchResultAllOfDTO   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(description, context, version, provider, status, thumbnailUri, hasThumbnail, monetizedInfo, businessOwner, businessOwnerEmail, technicalOwner, technicalOwnerEmail);
+    return Objects.hash(description, context, version, provider, status, thumbnailUri, advertiseOnly, hasThumbnail, monetizedInfo, businessOwner, businessOwnerEmail, technicalOwner, technicalOwnerEmail);
   }
 
   @Override
@@ -282,6 +301,7 @@ public class APIProductSearchResultAllOfDTO   {
     sb.append("    provider: ").append(toIndentedString(provider)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    thumbnailUri: ").append(toIndentedString(thumbnailUri)).append("\n");
+    sb.append("    advertiseOnly: ").append(toIndentedString(advertiseOnly)).append("\n");
     sb.append("    hasThumbnail: ").append(toIndentedString(hasThumbnail)).append("\n");
     sb.append("    monetizedInfo: ").append(toIndentedString(monetizedInfo)).append("\n");
     sb.append("    businessOwner: ").append(toIndentedString(businessOwner)).append("\n");

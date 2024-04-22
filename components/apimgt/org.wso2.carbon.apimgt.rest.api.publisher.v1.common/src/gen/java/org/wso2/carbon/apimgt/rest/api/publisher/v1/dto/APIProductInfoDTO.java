@@ -37,6 +37,7 @@ public class APIProductInfoDTO   {
     private String businessOwnerEmail = null;
     private String technicalOwner = null;
     private String technicalOwnerEmail = null;
+    private Boolean advertiseOnly = null;
 
   /**
    * UUID of the api product 
@@ -299,6 +300,23 @@ public class APIProductInfoDTO   {
     this.technicalOwnerEmail = technicalOwnerEmail;
   }
 
+  /**
+   **/
+  public APIProductInfoDTO advertiseOnly(Boolean advertiseOnly) {
+    this.advertiseOnly = advertiseOnly;
+    return this;
+  }
+
+  
+  @ApiModelProperty(example = "true", value = "")
+  @JsonProperty("advertiseOnly")
+  public Boolean isAdvertiseOnly() {
+    return advertiseOnly;
+  }
+  public void setAdvertiseOnly(Boolean advertiseOnly) {
+    this.advertiseOnly = advertiseOnly;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -323,12 +341,13 @@ public class APIProductInfoDTO   {
         Objects.equals(businessOwner, apIProductInfo.businessOwner) &&
         Objects.equals(businessOwnerEmail, apIProductInfo.businessOwnerEmail) &&
         Objects.equals(technicalOwner, apIProductInfo.technicalOwner) &&
-        Objects.equals(technicalOwnerEmail, apIProductInfo.technicalOwnerEmail);
+        Objects.equals(technicalOwnerEmail, apIProductInfo.technicalOwnerEmail) &&
+        Objects.equals(advertiseOnly, apIProductInfo.advertiseOnly);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, context, description, provider, version, hasThumbnail, state, securityScheme, gatewayVendor, monetizedInfo, businessOwner, businessOwnerEmail, technicalOwner, technicalOwnerEmail);
+    return Objects.hash(id, name, context, description, provider, version, hasThumbnail, state, securityScheme, gatewayVendor, monetizedInfo, businessOwner, businessOwnerEmail, technicalOwner, technicalOwnerEmail, advertiseOnly);
   }
 
   @Override
@@ -351,6 +370,7 @@ public class APIProductInfoDTO   {
     sb.append("    businessOwnerEmail: ").append(toIndentedString(businessOwnerEmail)).append("\n");
     sb.append("    technicalOwner: ").append(toIndentedString(technicalOwner)).append("\n");
     sb.append("    technicalOwnerEmail: ").append(toIndentedString(technicalOwnerEmail)).append("\n");
+    sb.append("    advertiseOnly: ").append(toIndentedString(advertiseOnly)).append("\n");
     sb.append("}");
     return sb.toString();
   }

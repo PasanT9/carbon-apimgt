@@ -5710,6 +5710,7 @@ class APIProviderImpl extends AbstractAPIManager implements APIProvider {
                     mappedAPI.setTechnicalOwnerEmail(publisherAPIInfo.getTechnicalOwnerEmail());
                     mappedAPI.setMonetizationEnabled(publisherAPIInfo.getMonetizationStatus());
                     mappedAPI.setContextTemplate(publisherAPIInfo.getContext());
+                    mappedAPI.setAdvertiseOnly(publisherAPIInfo.isAdvertiseOnly());
                     populateDefaultVersion(mappedAPI);
                     populateAPIStatus(mappedAPI);
                     productList.add(mappedAPI);

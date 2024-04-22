@@ -38,6 +38,7 @@ public class PublisherAPIProductInfo {
     private String technicalOwner;
     private String technicalOwnerEmail;
     private Boolean isMonetizationEnabled;
+    private boolean advertiseOnly;
     public String getThumbnail() {
         return thumbnail;
     }
@@ -122,5 +123,13 @@ public class PublisherAPIProductInfo {
     }
     public void setMonetizationStatus(Boolean isMonetizationEnabled) {
         this.isMonetizationEnabled = isMonetizationEnabled;
+    }
+
+    public boolean isAdvertiseOnly() {
+        return advertiseOnly;
+    }
+
+    public void setAdvertiseOnly(boolean advertiseOnly) {
+        this.advertiseOnly = advertiseOnly;
     }
 }
