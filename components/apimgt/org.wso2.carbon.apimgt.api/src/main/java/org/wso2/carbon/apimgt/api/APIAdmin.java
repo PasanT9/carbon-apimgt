@@ -23,6 +23,7 @@ import org.wso2.carbon.apimgt.api.model.APICategory;
 import org.wso2.carbon.apimgt.api.model.Application;
 import org.wso2.carbon.apimgt.api.model.ApplicationInfo;
 import org.wso2.carbon.apimgt.api.model.Environment;
+import org.wso2.carbon.apimgt.api.model.LlmProvider;
 import org.wso2.carbon.apimgt.api.model.Monetization;
 import org.wso2.carbon.apimgt.api.model.MonetizationUsagePublishInfo;
 import org.wso2.carbon.apimgt.api.model.Workflow;
@@ -540,4 +541,14 @@ public interface APIAdmin  {
      * @throws APIManagementException
      */
     void deleteGlobalKeyManagerConfigurationById(String id) throws APIManagementException;
+
+    LlmProvider addLlmProvider(String organization, LlmProvider provider) throws APIManagementException;
+
+    List<LlmProvider> getAllLlmProviders(String organization) throws APIManagementException;
+
+    void deleteLlmProvider(String organization, String llmProviderId) throws APIManagementException;
+
+    LlmProvider updateLlmProvider(String organization, LlmProvider provider) throws APIManagementException;
+
+    LlmProvider getLlmProvider(String organization, String llmProviderId) throws APIManagementException;
 }

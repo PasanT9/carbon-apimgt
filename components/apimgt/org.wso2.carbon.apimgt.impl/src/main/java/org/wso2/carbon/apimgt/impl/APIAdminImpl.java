@@ -51,6 +51,7 @@ import org.wso2.carbon.apimgt.api.model.Environment;
 import org.wso2.carbon.apimgt.api.model.KeyManagerApplicationUsages;
 import org.wso2.carbon.apimgt.api.model.KeyManagerConfiguration;
 import org.wso2.carbon.apimgt.api.model.KeyManagerConnectorConfiguration;
+import org.wso2.carbon.apimgt.api.model.LlmProvider;
 import org.wso2.carbon.apimgt.api.model.Monetization;
 import org.wso2.carbon.apimgt.api.model.MonetizationUsagePublishInfo;
 import org.wso2.carbon.apimgt.api.model.VHost;
@@ -594,6 +595,33 @@ public class APIAdminImpl implements APIAdmin {
             new KeyMgtNotificationSender()
                     .notify(keyManagerConfigurationDTO, APIConstants.KeyManager.KeyManagerEvent.ACTION_DELETE);
         }
+    }
+
+    @Override
+    public LlmProvider addLlmProvider(String organization, LlmProvider provider) throws APIManagementException {
+        return apiMgtDAO.addLlmProvider(organization, provider);
+    }
+
+    @Override
+    public List<LlmProvider> getAllLlmProviders(String organization) throws APIManagementException {
+        return apiMgtDAO.getAllLlmProviders(organization);
+    }
+
+    @Override
+    public void deleteLlmProvider(String organization, String llmProviderId) throws APIManagementException {
+        apiMgtDAO.deleteLlmProvider(organization, llmProviderId);
+    }
+
+    @Override
+    public LlmProvider updateLlmProvider(String organization, LlmProvider provider) throws APIManagementException {
+
+        return apiMgtDAO.updateLlmProvider(organization, provider);
+    }
+
+    @Override
+    public LlmProvider getLlmProvider(String organization, String llmProviderId) throws APIManagementException {
+
+        return apiMgtDAO.getLlmProvider(organization, llmProviderId);
     }
 
     @Override
