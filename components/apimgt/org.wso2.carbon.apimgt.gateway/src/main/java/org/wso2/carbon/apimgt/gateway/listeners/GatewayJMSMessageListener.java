@@ -25,8 +25,10 @@ import com.google.gson.Gson;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONObject;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.model.APIStatus;
+import org.wso2.carbon.apimgt.api.model.LlmProvider;
 import org.wso2.carbon.apimgt.common.jms.JMSConnectionEventListener;
 import org.wso2.carbon.apimgt.gateway.APILoggerManager;
 import org.wso2.carbon.apimgt.gateway.EndpointCertificateDeployer;
@@ -418,7 +420,47 @@ public class GatewayJMSMessageListener implements MessageListener, JMSConnection
                     }
                 }
             }
+        } else if (EventType.LLM_PROVIDER_CREATE.toString().equals(eventType)) {
+            handleLlmProviderEvent(eventJson, true);
+        } else if (EventType.LLM_PROVIDER_DELETE.toString().equals(eventType)) {
+            handleLlmProviderEvent(eventJson, false);
+        } else if (EventType.LLM_PROVIDER_UPDATE.toString().equals(eventType)) {
+            handleLlmProviderUpdate(eventJson);
         }
+    }
+
+    private void handleLlmProviderUpdate(String eventJson) {
+
+        JSONObject jsonObject = new JSONObject(eventJson);
+        String providerId = jsonObject.getString("llmProviderId");
+        String configurations = jsonObject.getString("configuration");
+
+        DataHolder.getInstance().removeLlmProviderConfigurations(providerId);
+        DataHolder.getInstance().addLlmProviderConfigurations(providerId, configurations);
+    }
+
+    private void handleLlmProviderEvent(String eventJson, boolean isCreate) {
+
+        JSONObject jsonObject = new JSONObject(eventJson);
+        String providerId = jsonObject.getString("llmProviderId");
+        if (isCreate) {
+            String configurations = jsonObject.getString("configurations");
+            DataHolder.getInstance().addLlmProviderConfigurations(providerId, configurations);
+        } else {
+            DataHolder.getInstance().removeLlmProviderConfigurations(providerId);
+        }
+    }
+
+    private LlmProvider createProviderFromJson(String eventJson) {
+        JSONObject jsonObject = new JSONObject(eventJson);
+        String providerId = jsonObject.getString("llmProviderId");
+        String organization = jsonObject.getString("tenantDomain");
+
+        LlmProvider provider = new LlmProvider();
+        provider.setId(providerId);
+        provider.setOrganization(organization);
+
+        return provider;
     }
 
     private void endTenantFlow() {

@@ -847,6 +847,28 @@
         }
       }
     },
+    "/llm-provider-configs" : {
+      "get" : {
+        "tags" : [ "LLMProviderConfigs" ],
+        "summary" : "Retrieve persisted per LLM Provider configs",
+        "description" : "This retrieve the persisted LLM Provider configs.\n",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Event Received success",
+            "schema" : {
+              "$ref" : "#/definitions/LLMProviderConfigList"
+            }
+          },
+          "default" : {
+            "description" : "Unexpected error",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/correlation-configs" : {
       "get" : {
         "tags" : [ "Logging" ],
@@ -1354,8 +1376,8 @@
           "type" : "string",
           "example" : "EXCHANGED",
           "description" : "The type of the tokens to be used (exchanged or without exchanged). Accepted values are EXCHANGED, DIRECT or BOTH.",
-          "enum" : [ "EXCHANGED", "DIRECT", "BOTH" ],
-          "default" : "DIRECT"
+          "default" : "DIRECT",
+          "enum" : [ "EXCHANGED", "DIRECT", "BOTH" ]
         }
       }
     },
@@ -1993,6 +2015,28 @@
           }
         }
       } ]
+    },
+    "LLMProviderConfigList" : {
+      "properties" : {
+        "apis" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LLMProviderConfig"
+          }
+        }
+      },
+      "title" : "LLM Provider Config List"
+    },
+    "LLMProviderConfig" : {
+      "properties" : {
+        "llmProviderId" : {
+          "type" : "string"
+        },
+        "configurations" : {
+          "type" : "string"
+        }
+      },
+      "title" : "LLM Provider Config"
     },
     "APILoggingConfigList" : {
       "properties" : {

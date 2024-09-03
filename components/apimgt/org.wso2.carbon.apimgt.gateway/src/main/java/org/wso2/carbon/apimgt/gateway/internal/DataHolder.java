@@ -24,10 +24,8 @@ import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.api.gateway.GatewayAPIDTO;
 import org.wso2.carbon.apimgt.api.gateway.GraphQLSchemaDTO;
 import org.wso2.carbon.apimgt.gateway.utils.GatewayUtils;
-import org.wso2.carbon.apimgt.gateway.webhooks.SubscriptionDataStore;
 import org.wso2.carbon.apimgt.impl.notifier.events.APIEvent;
 import org.wso2.carbon.apimgt.impl.notifier.events.DeployAPIInGatewayEvent;
-import org.wso2.carbon.apimgt.keymgt.SubscriptionDataHolder;
 import org.wso2.carbon.apimgt.keymgt.model.SubscriptionDataLoader;
 import org.wso2.carbon.apimgt.keymgt.model.entity.API;
 import org.wso2.carbon.apimgt.keymgt.model.exception.DataLoadingException;
@@ -45,6 +43,7 @@ public class DataHolder {
     private Map<String, List<String>> apiToKeyManagersMap = new HashMap<>();
     private Map<String,Map<String, API>> tenantAPIMap  = new HashMap<>();
     private Map<String, Boolean> tenantDeployStatus = new HashMap<>();
+    private Map<String, String> llmProviderConfigurationHolder = new HashMap<>();
     private boolean isAllGatewayPoliciesDeployed = false;
 
     private DataHolder() {
@@ -54,6 +53,26 @@ public class DataHolder {
     public Map<String, List<String>> getApiToCertificatesMap() {
 
         return apiToCertificatesMap;
+    }
+
+    public String getLlmProviderConfigurations(String llmProviderId) {
+
+        if (llmProviderConfigurationHolder.containsKey(llmProviderId)) {
+            return llmProviderConfigurationHolder.get(llmProviderId);
+        } else {
+            log.warn("LLM Provider key " + llmProviderId + " not found");
+            return null;
+        }
+    }
+
+    public void addLlmProviderConfigurations(String llmProviderId, String payloadHandlerType) {
+        llmProviderConfigurationHolder.put(llmProviderId, payloadHandlerType);
+    }
+    public void removeLlmProviderConfigurations(String llmProviderId) {
+        if (llmProviderId == null) {
+            return;
+        }
+        llmProviderConfigurationHolder.remove(llmProviderId);
     }
 
     public void setApiToCertificatesMap(Map<String, List<String>> apiToCertificatesMap) {

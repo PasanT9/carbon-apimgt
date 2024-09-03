@@ -28,6 +28,7 @@ import org.wso2.carbon.apimgt.gateway.utils.redis.RedisCacheUtils;
 import org.wso2.carbon.apimgt.impl.APIManagerAnalyticsConfiguration;
 import org.wso2.carbon.apimgt.impl.APIManagerConfiguration;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
+import org.wso2.carbon.apimgt.api.LlmProviderService;
 import org.wso2.carbon.apimgt.impl.caching.CacheInvalidationService;
 import org.wso2.carbon.apimgt.impl.dto.RedisConfig;
 import org.wso2.carbon.apimgt.impl.dto.ThrottleProperties;
@@ -84,6 +85,7 @@ public class ServiceReferenceHolder {
     private MediationSecurityAdminService mediationSecurityAdminService;
     private ThrottleDataPublisher throttleDataPublisher;
     private Map<String,AbstractAPIMgtGatewayJWTGenerator> apiMgtGatewayJWTGenerators  = new HashMap<>();
+    private Map<String, LlmProviderService> llmPayloadHandlerMap = new HashMap();
     private TracingTracer tracer;
     private TelemetryTracer telemetryTracer;
     private CacheInvalidationService cacheInvalidationService;
@@ -460,4 +462,23 @@ public class ServiceReferenceHolder {
         this.gatewayCount = gatewayCount;
     }
 
+    public void addLlmPayloadHandler(String type, LlmProviderService llmProviderService) {
+
+        llmPayloadHandlerMap.put(type, llmProviderService);
+    }
+
+    public void removeLlmPayloadHandler(String type) {
+
+        llmPayloadHandlerMap.remove(type);
+    }
+
+    public LlmProviderService getLlmPayloadHandler(String type) {
+
+        return llmPayloadHandlerMap.get(type);
+    }
+
+    public Map<String, LlmProviderService> getLlmPayloadHandlerMap() {
+
+        return this.llmPayloadHandlerMap;
+    }
 }

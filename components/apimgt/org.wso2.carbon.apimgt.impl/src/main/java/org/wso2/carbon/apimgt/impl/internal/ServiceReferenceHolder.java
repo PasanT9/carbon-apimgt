@@ -17,6 +17,7 @@
 package org.wso2.carbon.apimgt.impl.internal;
 
 import org.wso2.carbon.apimgt.api.APIDefinition;
+import org.wso2.carbon.apimgt.api.LlmProviderService;
 import org.wso2.carbon.apimgt.api.OrganizationResolver;
 import org.wso2.carbon.apimgt.api.model.KeyManagerConnectorConfiguration;
 import org.wso2.carbon.apimgt.api.model.WorkflowTaskService;
@@ -30,6 +31,7 @@ import org.wso2.carbon.apimgt.impl.config.APIMConfigServiceImpl;
 import org.wso2.carbon.apimgt.impl.deployer.ExternalGatewayDeployer;
 import org.wso2.carbon.apimgt.impl.gatewayartifactsynchronizer.ArtifactSaver;
 import org.wso2.carbon.apimgt.impl.gatewayartifactsynchronizer.GatewayArtifactGenerator;
+import org.wso2.carbon.apimgt.impl.handlers.APIConfigMediaTypeHandler;
 import org.wso2.carbon.apimgt.impl.importexport.ImportExportAPI;
 import org.wso2.carbon.apimgt.impl.keymgt.KeyManagerConfigurationService;
 import org.wso2.carbon.apimgt.impl.notifier.Notifier;
@@ -78,6 +80,8 @@ public class ServiceReferenceHolder {
     private Map<String, ExternalEnvironment> externalEnvironmentsMap = new HashMap<>();
     private Map<String, APIDefinition> apiDefinitionMap = new HashMap<>();
     private WorkflowTaskService workflowTaskService;
+
+    private Map<String, LlmProviderService> llmPayloadHandlerMap = new HashMap();
 
     private ServiceReferenceHolder() {
 
@@ -376,6 +380,26 @@ public class ServiceReferenceHolder {
     public void setWorkflowTaskService(WorkflowTaskService workflowTaskService) {
 
         this.workflowTaskService = workflowTaskService;    
+    }
+
+    public void addLlmPayloadHandler(String type, LlmProviderService llmProviderService) {
+
+        llmPayloadHandlerMap.put(type, llmProviderService);
+    }
+
+    public void removeLlmPayloadHandler(String type) {
+
+        llmPayloadHandlerMap.remove(type);
+    }
+
+    public LlmProviderService getLlmPayloadHandler(String type) {
+
+        return llmPayloadHandlerMap.get(type);
+    }
+
+    public Map<String, LlmProviderService> getLlmPayloadHandlerMap() {
+
+        return this.llmPayloadHandlerMap;
     }
 
 }

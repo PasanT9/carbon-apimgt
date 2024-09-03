@@ -328,5 +328,6 @@ public class JMSConstants {
     public static final String TOPIC_TOKEN_REVOCATION = "tokenRevocation";
     public static final String TOPIC_CACHE_INVALIDATION = "cacheInvalidation";
     public static final String TOPIC_KEY_MANAGER = "keyManager";
+    public static final String TOPIC_LLM_PROVIDER = "keyManager";
     public static final String TOPIC_NOTIFICATION = "notification";
 }
