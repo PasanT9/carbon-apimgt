@@ -94,7 +94,5 @@ public class APIConstants {
         public static final String LLM_PROVIDER_SERVICE_DEFAULT = "default";
         public static final String NULL = "null";
         public static final String LLM_PROVIDER = "LLM_PROVIDER";
-        public static final String LLM_PROVIDER_NAME = "llmProviderName";
-        public static final String LLM_PROVIDER_API_VERSION = "llmProviderApiVersion";
     }
 }

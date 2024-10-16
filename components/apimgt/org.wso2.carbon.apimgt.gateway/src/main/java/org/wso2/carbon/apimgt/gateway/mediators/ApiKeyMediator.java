@@ -31,9 +31,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
+
 public class ApiKeyMediator extends AbstractMediator implements ManagedLifecycle {
 
-    private static final Log log = LogFactory.getLog(OAuthMediator.class);
+    private static final Log log = LogFactory.getLog(ApiKeyMediator.class);
     private String apiKeyIdentifier;
     private String apiKeyValue;
     private String apiKeyIdentifierType;
