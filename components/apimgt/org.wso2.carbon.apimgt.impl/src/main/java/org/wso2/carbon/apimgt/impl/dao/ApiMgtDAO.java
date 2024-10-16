@@ -19917,10 +19917,7 @@ public class ApiMgtDAO {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         aiConfiguration = new AIConfiguration();
-                        String providerId = rs.getString("LLM_PROVIDER_UUID");
-                        LLMProvider provider = getLLMProvider(organization, providerId);
-                        aiConfiguration.setLlmProviderName(provider.getName());
-                        aiConfiguration.setLlmProviderApiVersion(provider.getApiVersion());
+                        aiConfiguration.setLlmProviderId(rs.getString("LLM_PROVIDER_UUID"));
                     }
                 }
                 connection.commit();
