@@ -41,7 +41,6 @@ import org.wso2.carbon.apimgt.api.dto.ClientCertificateDTO;
 import org.wso2.carbon.apimgt.api.gateway.CredentialDto;
 import org.wso2.carbon.apimgt.api.gateway.GatewayAPIDTO;
 import org.wso2.carbon.apimgt.api.gateway.GatewayContentDTO;
-import org.wso2.carbon.apimgt.api.model.AIConfiguration;
 import org.wso2.carbon.apimgt.api.model.API;
 import org.wso2.carbon.apimgt.api.model.APIProduct;
 import org.wso2.carbon.apimgt.api.model.APIProductIdentifier;
@@ -956,7 +955,7 @@ public class TemplateBuilderUtil {
         } else if (APIConstants.IMPLEMENTATION_TYPE_ENDPOINT.equalsIgnoreCase(api.getImplementation())) {
             String apiConfig = null;
             if (API_SUBTYPE_AI_API.equals(api.getSubtype())) {
-                apiConfig = builder.getConfigStringForAIAPITemplate(environment);
+                apiConfig = builder.getConfigStringForAIAPI(environment);
             } else {
                 apiConfig = builder.getConfigStringForTemplate(environment);
             }
