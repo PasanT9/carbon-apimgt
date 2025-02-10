@@ -262,26 +262,6 @@ public class API implements Serializable {
         this.backendThrottlingConfiguration = backendThrottlingConfiguration;
     }
 
-    public String getPrimaryProductionEndpointId() {
-
-        return primaryProductionEndpointId;
-    }
-
-    public void setPrimaryProductionEndpointId(String primaryProductionEndpointId) {
-
-        this.primaryProductionEndpointId = primaryProductionEndpointId;
-    }
-
-    public String getPrimarySandboxEndpointId() {
-
-        return primarySandboxEndpointId;
-    }
-
-    public void setPrimarySandboxEndpointId(String primarySandboxEndpointId) {
-
-        this.primarySandboxEndpointId = primarySandboxEndpointId;
-    }
-
     public String getAudience() {
         return audience;
     }
