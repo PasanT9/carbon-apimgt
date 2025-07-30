@@ -354,7 +354,7 @@ public class ExportUtils {
 
         if (apiDtoToReturn.isAPIDTO()) {
             addAPIEndpointsToArchive(archivePath, api, exportFormat, apiProvider, organization, preserveCredentials);
-        } else if (apiDtoToReturn.isMCPServerDTO()){
+        } else if (apiDtoToReturn.isMCPServerDTO()) {
             addBackendAPIsToArchive(archivePath, api, exportFormat, apiProvider, organization, preserveCredentials);
         }
 
@@ -364,6 +364,7 @@ public class ExportUtils {
                     APIConstants.ENDPOINT_TYPE_SEQUENCE
                             .equals(endpointConfig.get(API_ENDPOINT_CONFIG_PROTOCOL_TYPE).getAsString())
                     && apiDtoToReturn.isAPIDTO()
+                    && apiDtoToReturn.getType() != null
                     && APIConstants.API_TYPE_HTTP.equalsIgnoreCase(apiDtoToReturn.getType().toString())) {
 
                 Map endpointConf = (Map) apiDtoToReturn.getEndpointConfig();
@@ -815,8 +816,18 @@ public class ExportUtils {
         }
     }
 
+    /**
+     * Retrieve the endpoint certificates and store those in the archive directory.
+     *
+     * @param archivePath  File path to export the endpoint certificates
+     * @param dtoWrapper   API DTO Wrapper to be exported
+     * @param tenantId     Tenant id of the user
+     * @param exportFormat Export format of file
+     * @throws APIImportExportException If an error occurs while exporting endpoint certificates
+     */
     public static void addEndpointCertificatesToArchive(String archivePath, APIDTOWrapper dtoWrapper, int tenantId,
                                                         ExportFormat exportFormat) throws APIImportExportException {
+
         List<String> productionEndpoints;
         List<String> sandboxEndpoints;
         List<String> productionFailovers;
@@ -839,7 +850,9 @@ public class ExportUtils {
 
         if (StringUtils.isEmpty(endpointConfigString) || "null".equals(endpointConfigString)) {
             if (log.isDebugEnabled()) {
-                log.debug("Endpoint Details are empty for API: " + apiName + " " + APIConstants.API_DATA_VERSION + ": " + apiVersion);
+                log.debug(
+                        "Endpoint Details are empty for API: " + apiName + " " + APIConstants.API_DATA_VERSION + ": " +
+                                apiVersion);
             }
             return;
         }
@@ -858,7 +871,8 @@ public class ExportUtils {
             uniqueEndpointURLs.addAll(sandboxFailovers);
 
             for (String url : uniqueEndpointURLs) {
-                JsonArray certificateListOfUrl = getEndpointCertificateContentAndMetaData(tenantId, url, endpointCertsDirectoryPath);
+                JsonArray certificateListOfUrl =
+                        getEndpointCertificateContentAndMetaData(tenantId, url, endpointCertsDirectoryPath);
                 endpointCertificatesDetails.addAll(certificateListOfUrl);
             }
 
@@ -866,13 +880,16 @@ public class ExportUtils {
                 CommonUtil.writeDtoToFile(endpointCertsDirectoryPath + ImportExportConstants.ENDPOINTS_CERTIFICATE_FILE,
                         exportFormat, ImportExportConstants.TYPE_ENDPOINT_CERTIFICATES, endpointCertificatesDetails);
             } else if (log.isDebugEnabled()) {
-                log.debug("No endpoint certificates available for API: " + apiName + " " + APIConstants.API_DATA_VERSION + ": " + apiVersion + ". Skipping certificate export.");
+                log.debug(
+                        "No endpoint certificates available for API: " + apiName + " " + APIConstants.API_DATA_VERSION +
+                                ": " + apiVersion + ". Skipping certificate export.");
             }
 
         } catch (JSONException e) {
             throw new APIImportExportException("Error converting Endpoint config to JSON for API: " + apiName, e);
         } catch (IOException e) {
-            throw new APIImportExportException("Error retrieving/saving endpoint certificate details for API: " + apiName, e);
+            throw new APIImportExportException(
+                    "Error retrieving/saving endpoint certificate details for API: " + apiName, e);
         }
     }
 
@@ -1486,7 +1503,8 @@ public class ExportUtils {
             }
             api.setId(apiIdentifier);
 
-            String apiType = apiDtoWrapper.getType().toString();
+            String apiType = apiDtoWrapper.getType() != null ? apiDtoWrapper.getType().toString() : null;
+
             if (apiDtoWrapper.isMCPServerDTO() || (apiDtoWrapper.isAPIDTO() &&
                     !PublisherCommonUtils.isStreamingAPI((APIDTO) apiDtoWrapper.getWrappedDTO()))) {
                 if (APIConstants.APITransportType.GRAPHQL.toString().equalsIgnoreCase(apiType)) {

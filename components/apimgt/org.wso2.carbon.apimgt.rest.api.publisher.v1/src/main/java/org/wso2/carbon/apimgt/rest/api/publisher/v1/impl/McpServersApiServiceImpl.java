@@ -52,6 +52,7 @@ import org.wso2.carbon.apimgt.api.model.Tier;
 import org.wso2.carbon.apimgt.governance.api.model.APIMGovernableState;
 import org.wso2.carbon.apimgt.governance.api.model.ArtifactType;
 import org.wso2.carbon.apimgt.impl.APIConstants;
+import org.wso2.carbon.apimgt.rest.api.publisher.v1.common.APIDTOWrapper;
 import org.wso2.carbon.apimgt.impl.APIManagerFactory;
 import org.wso2.carbon.apimgt.impl.GZIPUtils;
 import org.wso2.carbon.apimgt.impl.ServiceCatalogImpl;
@@ -71,7 +72,6 @@ import org.wso2.carbon.apimgt.rest.api.common.dto.ErrorDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.v1.*;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.MessageContext;
-import org.wso2.carbon.apimgt.rest.api.publisher.v1.common.APIDTOWrapper;
 import org.wso2.carbon.apimgt.rest.api.publisher.v1.common.mappings.APIMappingUtil;
 import org.wso2.carbon.apimgt.rest.api.publisher.v1.common.mappings.DocumentationMappingUtil;
 import org.wso2.carbon.apimgt.rest.api.publisher.v1.common.mappings.PublisherCommonUtils;
@@ -117,6 +117,11 @@ import javax.ws.rs.core.StreamingOutput;
 
 import static org.wso2.carbon.apimgt.api.ExceptionCodes.API_VERSION_ALREADY_EXISTS;
 
+/**
+ * Implementation of the MCP Servers API service.
+ * This class provides methods to manage and retrieve information about MCP servers,
+ * including listing, retrieving details, handling documents, and managing revisions.
+ */
 public class McpServersApiServiceImpl implements McpServersApiService {
 
     private static final Log log = LogFactory.getLog(McpServersApiServiceImpl.class);
@@ -247,13 +252,15 @@ public class McpServersApiServiceImpl implements McpServersApiService {
     }
 
     /**
-     * @param mcpServerId
-     * @param documentId
-     * @param accept
-     * @param ifNoneMatch
-     * @param messageContext
-     * @return
-     * @throws APIManagementException
+     * Retrieves the OpenAPI definition of a specific MCP server.
+     * Validates the API existence and retrieves the updated OpenAPI definition.
+     *
+     * @param mcpServerId    UUID of the MCP server.
+     * @param accept         The requested content type (e.g. JSON or plain text).
+     * @param ifNoneMatch    The ETag header value for conditional requests.
+     * @param messageContext Message context with request details.
+     * @return HTTP Response containing the OpenAPI definition or an error response.
+     * @throws APIManagementException if an error occurs while retrieving the OpenAPI definition.
      */
     @Override
     public Response getMCPServerDocument(String mcpServerId, String documentId, String accept, String ifNoneMatch,
@@ -286,13 +293,16 @@ public class McpServersApiServiceImpl implements McpServersApiService {
     }
 
     /**
-     * @param mcpServerId
-     * @param documentId
-     * @param accept
-     * @param ifNoneMatch
-     * @param messageContext
-     * @return
-     * @throws APIManagementException
+     * Retrieves the content of a specific document associated with an MCP server.
+     * Handles different content types (file, inline, URL) and returns appropriate responses.
+     *
+     * @param mcpServerId    UUID of the MCP server.
+     * @param documentId     UUID of the document.
+     * @param accept         The requested content type (e.g. JSON or plain text).
+     * @param ifNoneMatch    The ETag header value for conditional requests.
+     * @param messageContext Message context with request details.
+     * @return HTTP Response containing the document content or an error response.
+     * @throws APIManagementException if an error occurs while retrieving the document content.
      */
     @Override
     public Response getMCPServerDocumentContent(String mcpServerId, String documentId, String accept,
@@ -347,14 +357,17 @@ public class McpServersApiServiceImpl implements McpServersApiService {
     }
 
     /**
-     * @param mcpServerId
-     * @param limit
-     * @param offset
-     * @param accept
-     * @param ifNoneMatch
-     * @param messageContext
-     * @return
-     * @throws APIManagementException
+     * Retrieves all documents associated with a specific MCP server.
+     * Supports pagination and returns a list of documentation DTOs.
+     *
+     * @param mcpServerId    UUID of the MCP server.
+     * @param limit          Maximum number of documents to return.
+     * @param offset         Starting index for pagination.
+     * @param accept         The requested content type (e.g. JSON).
+     * @param ifNoneMatch    The ETag header value for conditional requests.
+     * @param messageContext Message context with request details.
+     * @return HTTP Response containing the list of documents or an error response.
+     * @throws APIManagementException if an error occurs while retrieving the documents.
      */
     @Override
     public Response getMCPServerDocuments(String mcpServerId, Integer limit, Integer offset, String accept,
@@ -466,11 +479,13 @@ public class McpServersApiServiceImpl implements McpServersApiService {
     }
 
     /**
-     * @param mcpServerId
-     * @param ifNoneMatch
-     * @param messageContext
-     * @return
-     * @throws APIManagementException
+     * Retrieves the lifecycle history of a specific MCP server.
+     *
+     * @param mcpServerId    UUID of the MCP server.
+     * @param ifNoneMatch    The ETag header value for conditional requests.
+     * @param messageContext Message context with request details.
+     * @return HTTP Response containing the lifecycle history DTO.
+     * @throws APIManagementException if an error occurs while retrieving the lifecycle history.
      */
     @Override
     public Response getMCPServerLifecycleHistory(String mcpServerId, String ifNoneMatch, MessageContext messageContext)
@@ -505,11 +520,13 @@ public class McpServersApiServiceImpl implements McpServersApiService {
     }
 
     /**
-     * @param mcpServerId
-     * @param ifNoneMatch
-     * @param messageContext
-     * @return
-     * @throws APIManagementException
+     * Retrieves the lifecycle state of a specific MCP server.
+     *
+     * @param mcpServerId    UUID of the MCP server.
+     * @param ifNoneMatch    The ETag header value for conditional requests.
+     * @param messageContext Message context with request details.
+     * @return HTTP Response containing the lifecycle state DTO.
+     * @throws APIManagementException if an error occurs while retrieving the lifecycle state.
      */
     @Override
     public Response getMCPServerLifecycleState(String mcpServerId, String ifNoneMatch, MessageContext messageContext)
@@ -541,6 +558,14 @@ public class McpServersApiServiceImpl implements McpServersApiService {
         return Response.status(status).entity(errorObject).build();
     }
 
+    /**
+     * Retrieves the list of deployments for a specific MCP server revision.
+     *
+     * @param mcpServerId    UUID of the MCP server.
+     * @param messageContext Message context with request details.
+     * @return HTTP Response containing a list of APIRevisionDeploymentDTO objects.
+     * @throws APIManagementException if an error occurs while retrieving the deployments.
+     */
     @Override
     public Response getMCPServerRevisionDeployments(String mcpServerId, MessageContext messageContext)
             throws APIManagementException {
@@ -585,14 +610,17 @@ public class McpServersApiServiceImpl implements McpServersApiService {
     }
 
     /**
-     * @param mcpServerId
-     * @param xWSO2Tenant
-     * @param ifNoneMatch
-     * @param isAiApi
-     * @param organizationID
-     * @param messageContext
-     * @return
-     * @throws APIManagementException
+     * Retrieves the subscription policies for a specific MCP server.
+     * Validates the API existence and retrieves the available throttling policies.
+     *
+     * @param mcpServerId    UUID of the MCP server.
+     * @param xWSO2Tenant    The tenant identifier from request header.
+     * @param ifNoneMatch    The ETag header value for conditional requests.
+     * @param isAiApi        Indicates if the API is an AI API.
+     * @param organizationID The organization ID for which to retrieve policies.
+     * @param messageContext Message context of the request.
+     * @return Response containing the list of available throttling policies for the MCP server.
+     * @throws APIManagementException if an error occurs while retrieving subscription policies.
      */
     @Override
     public Response getMCPServerSubscriptionPolicies(String mcpServerId, String xWSO2Tenant, String ifNoneMatch,
@@ -607,23 +635,24 @@ public class McpServersApiServiceImpl implements McpServersApiService {
         List<Tier> availableThrottlingPolicyList = new ThrottlingPoliciesApiServiceImpl().getThrottlingPolicyList(
                 ThrottlingPolicyDTO.PolicyLevelEnum.SUBSCRIPTION.toString(), true, isAiApi);
 
-        if (apiInfo != null) {
-            List<String> apiPolicies =
-                    RestApiPublisherUtils.getSubscriptionPoliciesForOrganization(apiInfo, organizationID);
-            List<Tier> apiThrottlingPolicies = ApisApiServiceImplUtils.filterAPIThrottlingPolicies(apiPolicies,
-                    availableThrottlingPolicyList);
-            return Response.ok().entity(apiThrottlingPolicies).build();
-        }
-        return null;
+        List<String> apiPolicies =
+                RestApiPublisherUtils.getSubscriptionPoliciesForOrganization(new APIDTOWrapper(apiInfo),
+                        organizationID);
+        List<Tier> apiThrottlingPolicies = ApisApiServiceImplUtils.filterAPIThrottlingPolicies(apiPolicies,
+                availableThrottlingPolicyList);
+        return Response.ok().entity(apiThrottlingPolicies).build();
     }
 
     /**
-     * @param mcpServerId
-     * @param accept
-     * @param ifNoneMatch
-     * @param messageContext
-     * @return
-     * @throws APIManagementException
+     * Retrieves the Swagger definition of a specific MCP server.
+     * Validates the API existence and retrieves the updated Swagger definition.
+     *
+     * @param mcpServerId    UUID of the MCP server.
+     * @param accept         The requested content type (e.g. JSON or plain text).
+     * @param ifNoneMatch    The ETag header value for conditional requests.
+     * @param messageContext Message context of the request.
+     * @return Response containing the Swagger definition or an error response.
+     * @throws APIManagementException if an error occurs while retrieving the Swagger definition.
      */
     @Override
     public Response getMCPServerSwagger(String mcpServerId, String accept, String ifNoneMatch,
@@ -657,17 +686,20 @@ public class McpServersApiServiceImpl implements McpServersApiService {
     }
 
     /**
-     * @param fileInputStream
-     * @param fileDetail
-     * @param preserveProvider
-     * @param rotateRevision
-     * @param overwrite
-     * @param preservePortalConfigurations
-     * @param dryRun
-     * @param accept
-     * @param messageContext
-     * @return
-     * @throws APIManagementException
+     * Imports an MCP server from a file input stream.
+     * Validates the input parameters and performs the import operation.
+     *
+     * @param fileInputStream              InputStream of the file to be imported
+     * @param fileDetail                   Attachment details of the file
+     * @param preserveProvider             Whether to preserve the provider information
+     * @param rotateRevision               Whether to rotate the revision
+     * @param overwrite                    Whether to overwrite existing API
+     * @param preservePortalConfigurations Whether to preserve portal configurations
+     * @param dryRun                       Whether to perform a dry run without actual import
+     * @param accept                       The requested content type (e.g. JSON or plain text)
+     * @param messageContext               Message context of the request
+     * @return Response containing the result of the import operation
+     * @throws APIManagementException if an error occurs during import or validation
      */
     @Override
     public Response importMCPServer(InputStream fileInputStream, Attachment fileDetail,
@@ -744,7 +776,7 @@ public class McpServersApiServiceImpl implements McpServersApiService {
                     ExceptionCodes.ADDITIONAL_PROPERTIES_PARSE_ERROR);
         }
         populateDefaultValuesForMCPServer(apiDTOFromProperties, APIConstants.API_SUBTYPE_DIRECT_ENDPOINT);
-        if (!PublisherCommonUtils.validateEndpoints(apiDTOFromProperties)) {
+        if (!PublisherCommonUtils.validateEndpoints(new APIDTOWrapper(apiDTOFromProperties))) {
             throw new APIManagementException("Invalid/Malformed endpoint URL(s) detected",
                     ExceptionCodes.INVALID_ENDPOINT_URL);
         }
@@ -885,11 +917,13 @@ public class McpServersApiServiceImpl implements McpServersApiService {
     }
 
     /**
-     * @param mcpServerId
-     * @param documentDTO
-     * @param messageContext
-     * @return
-     * @throws APIManagementException
+     * Adds a new document to an MCP server.
+     *
+     * @param mcpServerId    UUID of the MCP server.
+     * @param documentDTO    Document details to be added.
+     * @param messageContext Message context of the request.
+     * @return HTTP Response containing the created DocumentDTO or an error response.
+     * @throws APIManagementException if an error occurs while adding the document.
      */
     @Override
     public Response addMCPServerDocument(String mcpServerId, DocumentDTO documentDTO, MessageContext messageContext)
@@ -933,15 +967,17 @@ public class McpServersApiServiceImpl implements McpServersApiService {
     }
 
     /**
-     * @param mcpServerId
-     * @param documentId
-     * @param ifMatch
-     * @param fileInputStream
-     * @param fileDetail
-     * @param inlineContent
-     * @param messageContext
-     * @return
-     * @throws APIManagementException
+     * Adds content to an existing MCP server document.
+     *
+     * @param mcpServerId     UUID of the MCP server.
+     * @param documentId      UUID of the document to which content should be added.
+     * @param ifMatch         ETag value for optimistic concurrency control.
+     * @param fileInputStream InputStream of the file to be added as content.
+     * @param fileDetail      Attachment details of the file.
+     * @param inlineContent   Inline content to be added to the document.
+     * @param messageContext  Message context of the request.
+     * @return HTTP Response containing the updated DocumentDTO or an error response.
+     * @throws APIManagementException if an error occurs while adding content to the document.
      */
     @Override
     public Response addMCPServerDocumentContent(String mcpServerId, String documentId, String ifMatch,
@@ -1022,13 +1058,15 @@ public class McpServersApiServiceImpl implements McpServersApiService {
     }
 
     /**
-     * @param action
-     * @param mcpServerId
-     * @param lifecycleChecklist
-     * @param ifMatch
-     * @param messageContext
-     * @return
-     * @throws APIManagementException
+     * Changes the lifecycle state of an MCP server.
+     *
+     * @param action             The action to perform on the lifecycle (e.g., "promote", "demote").
+     * @param mcpServerId        UUID of the MCP server.
+     * @param lifecycleChecklist JSON string containing the lifecycle checklist.
+     * @param ifMatch            ETag value for optimistic concurrency control.
+     * @param messageContext     Message context of the request.
+     * @return HTTP Response containing the updated lifecycle state or an error response.
+     * @throws APIManagementException if an error occurs while changing the lifecycle state.
      */
     @Override
     public Response changeMCPServerLifecycle(String action, String mcpServerId, String lifecycleChecklist,
@@ -1059,11 +1097,15 @@ public class McpServersApiServiceImpl implements McpServersApiService {
     }
 
     /**
-     * @param body
-     * @param openAPIVersion
-     * @param messageContext
-     * @return
-     * @throws APIManagementException
+     * Creates a new MCP server.
+     * Validates the API existence, checks governance compliance, and adds the new API with generated Swagger
+     * definition.
+     *
+     * @param body           DTO containing the details of the MCP server to be created.
+     * @param openAPIVersion OpenAPI version for the MCP server.
+     * @param messageContext Message context of the request.
+     * @return HTTP Response containing the created MCPServerDTO or an error response.
+     * @throws APIManagementException if an error occurs while creating the MCP server.
      */
     @Override
     public Response createMCPServer(MCPServerDTO body, String openAPIVersion, MessageContext messageContext)
@@ -1076,8 +1118,8 @@ public class McpServersApiServiceImpl implements McpServersApiService {
             OrganizationInfo orgInfo = RestApiUtil.getOrganizationInfo(messageContext);
             populateDefaultValuesForMCPServer(body, body.getSubtypeConfiguration().getSubtype());
             API createdApi = PublisherCommonUtils
-                    .addAPIWithGeneratedSwaggerDefinition(body, openAPIVersion, RestApiCommonUtil.getLoggedInUsername(),
-                            organization, orgInfo);
+                    .addAPIWithGeneratedSwaggerDefinition(new APIDTOWrapper(body), openAPIVersion,
+                            RestApiCommonUtil.getLoggedInUsername(), organization, orgInfo);
             createdApiDTO = APIMappingUtil.fromAPItoMCPServerDTO(createdApi);
             createdApiUri = new URI(RestApiConstants.RESOURCE_PATH_APIS + "/" + createdApiDTO.getId());
             return Response.created(createdApiUri).entity(createdApiDTO).build();
@@ -1164,13 +1206,16 @@ public class McpServersApiServiceImpl implements McpServersApiService {
     }
 
     /**
-     * @param newVersion
-     * @param mcpServerId
-     * @param defaultVersion
-     * @param serviceVersion
-     * @param messageContext
-     * @return
-     * @throws APIManagementException
+     * Creates a new version of an existing MCP server.
+     * Validates the API existence, checks for existing versions, and creates the new version.
+     *
+     * @param newVersion     The new version to be created.
+     * @param mcpServerId    UUID of the MCP Server to create a new version for.
+     * @param defaultVersion Indicates if this is the default version.
+     * @param serviceVersion Version of the service to be associated with the MCP server.
+     * @param messageContext Message context of the request.
+     * @return HTTP Response containing the created MCPServerDTO or an error response.
+     * @throws APIManagementException if an error occurs while creating the new version.
      */
     @Override
     public Response createNewMCPServerVersion(String newVersion, String mcpServerId, Boolean defaultVersion,
@@ -1341,12 +1386,15 @@ public class McpServersApiServiceImpl implements McpServersApiService {
     }
 
     /**
-     * @param mcpServerId
-     * @param documentId
-     * @param ifMatch
-     * @param messageContext
-     * @return
-     * @throws APIManagementException
+     * Deletes a specific document of an MCP server.
+     * Validates the API existence, checks governance compliance, and deletes the document.
+     *
+     * @param mcpServerId    UUID of the API.
+     * @param documentId     UUID of the document to be deleted.
+     * @param ifMatch        ETag value for optimistic concurrency control.
+     * @param messageContext Message context of the request.
+     * @return HTTP Response indicating the result of the deletion operation.
+     * @throws APIManagementException if an error occurs while deleting the document.
      */
     @Override
     public Response deleteMCPServerDocument(String mcpServerId, String documentId, String ifMatch,
@@ -1479,19 +1527,23 @@ public class McpServersApiServiceImpl implements McpServersApiService {
     }
 
     /**
-     * @param mcpServerId
-     * @param name
-     * @param version
-     * @param revisionNumber
-     * @param providerName
-     * @param format
-     * @param preserveStatus
-     * @param latestRevision
-     * @param gatewayEnvironment
-     * @param preserveCredentials
-     * @param messageContext
-     * @return
-     * @throws APIManagementException
+     * Exports an MCP server in the specified format.
+     * If the gateway environment is not specified, it exports the API in the given format.
+     * If the gateway environment is specified, it generates a runtime artifact for the MCP server.
+     *
+     * @param mcpServerId         UUID of the MCP server to be exported.
+     * @param name                Name of the MCP server.
+     * @param version             Version of the MCP server.
+     * @param revisionNumber      Revision number of the MCP server.
+     * @param providerName        Provider name of the MCP server.
+     * @param format              Export format (YAML or ZIP).
+     * @param preserveStatus      Whether to preserve the status of the API during export.
+     * @param latestRevision      Whether to export the latest revision.
+     * @param gatewayEnvironment  Gateway environment for runtime artifact generation.
+     * @param preserveCredentials Whether to preserve credentials during export.
+     * @param messageContext      Message context of the request.
+     * @return HTTP Response containing the exported file or runtime artifact.
+     * @throws APIManagementException if an error occurs while exporting the MCP server.
      */
     @Override
     public Response exportMCPServer(String mcpServerId, String name, String version, String revisionNumber,
@@ -1599,7 +1651,7 @@ public class McpServersApiServiceImpl implements McpServersApiService {
             String organization = RestApiUtil.getValidatedOrganization(messageContext);
             OrganizationInfo organizationInfo = RestApiUtil.getOrganizationInfo(messageContext);
             CommonUtils.validateAPIExistence(mcpServerId);
-            if (!PublisherCommonUtils.validateEndpointConfigs(body)) {
+            if (!PublisherCommonUtils.validateEndpointConfigs(new APIDTOWrapper(body))) {
                 throw new APIManagementException("Invalid endpoint configs detected",
                         ExceptionCodes.INVALID_ENDPOINT_CONFIG);
             }
@@ -1613,7 +1665,7 @@ public class McpServersApiServiceImpl implements McpServersApiService {
                         ExceptionCodes.ERROR_WHILE_UPDATING_MANDATORY_PROPERTIES.getErrorCode(), log);
             }
 
-            if (!PublisherCommonUtils.validateEndpoints(body)) {
+            if (!PublisherCommonUtils.validateEndpoints(new APIDTOWrapper(body))) {
                 throw new APIManagementException("Invalid/Malformed endpoint URL(s) detected",
                         ExceptionCodes.INVALID_ENDPOINT_URL);
             }
@@ -1669,13 +1721,16 @@ public class McpServersApiServiceImpl implements McpServersApiService {
     }
 
     /**
-     * @param mcpServerId
-     * @param documentId
-     * @param documentDTO
-     * @param ifMatch
-     * @param messageContext
-     * @return
-     * @throws APIManagementException
+     * Updates a specific document of an MCP server.
+     * Validates the API existence, checks governance compliance, and updates the document.
+     *
+     * @param mcpServerId    UUID of the API.
+     * @param documentId     UUID of the document to be updated.
+     * @param documentDTO    DocumentDTO containing the updated document details.
+     * @param ifMatch        ETag value for optimistic concurrency control.
+     * @param messageContext Message context of the request.
+     * @return HTTP Response containing the updated DocumentationDTO or an error response.
+     * @throws APIManagementException if an error occurs while updating the document.
      */
     @Override
     public Response updateMCPServerDocument(String mcpServerId, String documentId, DocumentDTO documentDTO,
@@ -1778,6 +1833,17 @@ public class McpServersApiServiceImpl implements McpServersApiService {
                 false)).build();
     }
 
+    /**
+     * Updates the deployment details of a specific revision of an MCP server.
+     * Validates the API existence, checks governance compliance, and updates the deployment details.
+     *
+     * @param mcpServerId              UUID of the API.
+     * @param deploymentId             ID of the deployment to be updated.
+     * @param apIRevisionDeploymentDTO APIRevisionDeploymentDTO containing the updated deployment details.
+     * @param messageContext           Message context of the request.
+     * @return HTTP Response containing the updated APIRevisionDeploymentDTO or an error response.
+     * @throws APIManagementException if an error occurs while updating the deployment details.
+     */
     @Override
     public Response updateMCPServerDeployment(String mcpServerId, String deploymentId,
                                               APIRevisionDeploymentDTO apIRevisionDeploymentDTO,
@@ -1807,11 +1873,14 @@ public class McpServersApiServiceImpl implements McpServersApiService {
     }
 
     /**
-     * @param query
-     * @param ifNoneMatch
-     * @param messageContext
-     * @return
-     * @throws APIManagementException
+     * Validates whether the MCP server exists based on the provided query.
+     * The query can be in the format "name:<apiName>" or "context:<apiContext>".
+     *
+     * @param query          The query to validate the MCP server existence.
+     * @param ifNoneMatch    ETag value for optimistic concurrency control.
+     * @param messageContext Message context of the request.
+     * @return Response indicating whether the MCP server exists or not.
+     * @throws APIManagementException if an error occurs while validating the MCP server.
      */
     @Override
     public Response validateMCPServer(String query, String ifNoneMatch, MessageContext messageContext)
@@ -1849,11 +1918,14 @@ public class McpServersApiServiceImpl implements McpServersApiService {
     }
 
     /**
-     * @param endpointUrl
-     * @param mcpServerId
-     * @param messageContext
-     * @return
-     * @throws APIManagementException
+     * Validates the MCP server endpoint by sending an HTTP HEAD request.
+     * Returns a response with the validation results.
+     *
+     * @param endpointUrl    The URL of the MCP server endpoint to validate.
+     * @param mcpServerId    The ID of the MCP server.
+     * @param messageContext Message context of the request.
+     * @return Response containing the validation results or an error response if validation fails.
+     * @throws APIManagementException if an error occurs during validation.
      */
     @Override
     public Response validateMCPServerEndpoint(String endpointUrl, String mcpServerId, MessageContext messageContext)
@@ -1877,14 +1949,17 @@ public class McpServersApiServiceImpl implements McpServersApiService {
     }
 
     /**
-     * @param returnContent
-     * @param url
-     * @param fileInputStream
-     * @param fileDetail
-     * @param inlineAPIDefinition
-     * @param messageContext
-     * @return
-     * @throws APIManagementException
+     * Validates the OpenAPI definition of an MCP server.
+     * This method checks the validity of the OpenAPI definition and returns a response with validation results.
+     *
+     * @param returnContent       Whether to return the content of the OpenAPI definition.
+     * @param url                 The URL of the OpenAPI definition.
+     * @param fileInputStream     Input stream of the OpenAPI definition file.
+     * @param fileDetail          Attachment details of the OpenAPI definition file.
+     * @param inlineAPIDefinition Inline OpenAPI definition as a string.
+     * @param messageContext      Message context of the request.
+     * @return Response containing validation results or an error response if validation fails.
+     * @throws APIManagementException if an error occurs during validation.
      */
     @Override
     public Response validateOpenAPIDefinitionOfMCPServer(Boolean returnContent, String url, InputStream fileInputStream,

@@ -128,7 +128,8 @@ public class ImportExportAPIServiceImpl implements ImportExportAPI {
             MCPServerDTO mcpServerDtoToReturn = APIMappingUtil.fromAPItoMCPServerDTO(api, preserveCredentials,
                     apiProvider);
             return ExportUtils.exportAPI(apiProvider, apiIdentifier, new APIDTOWrapper(mcpServerDtoToReturn), api,
-                    userName, format, preserveStatus, preserveDocs, StringUtils.EMPTY, organization, preserveCredentials);
+                    userName, format, preserveStatus, preserveDocs, StringUtils.EMPTY, organization,
+                    preserveCredentials);
         } else {
             APIDTO apiDtoToReturn = APIMappingUtil.fromAPItoDTO(api, preserveCredentials, apiProvider);
             return ExportUtils.exportAPI(apiProvider, apiIdentifier, new APIDTOWrapper(apiDtoToReturn), api, userName,

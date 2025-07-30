@@ -40,6 +40,7 @@ import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.apimgt.impl.utils.TierNameComparator;
 import org.wso2.carbon.apimgt.impl.workflow.WorkflowExecutorFactory;
 import org.wso2.carbon.apimgt.rest.api.common.RestApiCommonUtil;
+import org.wso2.carbon.apimgt.rest.api.publisher.v1.common.APIDTOWrapper;
 import org.wso2.carbon.apimgt.rest.api.publisher.v1.dto.APIDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.v1.dto.APIProductDTO;
 import org.wso2.carbon.apimgt.rest.api.publisher.v1.dto.AdvertiseInfoDTO;
@@ -150,7 +151,7 @@ public class PublisherCommonUtilsTest {
         endpointConfig.put(API_DATA_SANDBOX_ENDPOINTS, sandboxEndpoint);
 
         Mockito.when(apiDto.getEndpointConfig()).thenReturn(endpointConfig);
-        Assert.assertTrue(PublisherCommonUtils.validateEndpoints(apiDto));
+        Assert.assertTrue(PublisherCommonUtils.validateEndpoints(new APIDTOWrapper(apiDto)));
     }
 
     @Test
@@ -181,7 +182,7 @@ public class PublisherCommonUtilsTest {
         Mockito.when(advertiseInfoDto.isAdvertised()).thenReturn(false);
         PowerMockito.mockStatic(APIUtil.class);
         PowerMockito.when(APIUtil.validateEndpointURLs(endpoints)).thenReturn(true);
-        Assert.assertTrue(PublisherCommonUtils.validateEndpoints(apiDto));
+        Assert.assertTrue(PublisherCommonUtils.validateEndpoints(new APIDTOWrapper(apiDto)));
     }
 
     @Test
@@ -212,7 +213,7 @@ public class PublisherCommonUtilsTest {
         Mockito.when(advertiseInfoDto.isAdvertised()).thenReturn(false);
         PowerMockito.mockStatic(APIUtil.class);
         PowerMockito.when(APIUtil.validateEndpointURLs(endpoints)).thenReturn(false);
-        Assert.assertFalse(PublisherCommonUtils.validateEndpoints(apiDto));
+        Assert.assertFalse(PublisherCommonUtils.validateEndpoints(new APIDTOWrapper(apiDto)));
     }
 
     @Test
@@ -243,7 +244,7 @@ public class PublisherCommonUtilsTest {
         Mockito.when(advertiseInfoDto.isAdvertised()).thenReturn(false);
         PowerMockito.mockStatic(APIUtil.class);
         PowerMockito.when(APIUtil.validateEndpointURLs(endpoints)).thenReturn(false);
-        Assert.assertFalse(PublisherCommonUtils.validateEndpoints(apiDto));
+        Assert.assertFalse(PublisherCommonUtils.validateEndpoints(new APIDTOWrapper(apiDto)));
     }
 
     @Test
@@ -284,7 +285,7 @@ public class PublisherCommonUtilsTest {
         Mockito.when(advertiseInfoDto.getOriginalDevPortalUrl()).thenReturn(originalDevPortalUrl);
         PowerMockito.mockStatic(APIUtil.class);
         PowerMockito.when(APIUtil.validateEndpointURLs(endpoints)).thenReturn(true);
-        Assert.assertTrue(PublisherCommonUtils.validateEndpoints(apiDto));
+        Assert.assertTrue(PublisherCommonUtils.validateEndpoints(new APIDTOWrapper(apiDto)));
     }
 
     @Test
@@ -325,7 +326,7 @@ public class PublisherCommonUtilsTest {
         Mockito.when(advertiseInfoDto.getOriginalDevPortalUrl()).thenReturn(originalDevPortalUrl);
         PowerMockito.mockStatic(APIUtil.class);
         PowerMockito.when(APIUtil.validateEndpointURLs(endpoints)).thenReturn(false);
-        Assert.assertFalse(PublisherCommonUtils.validateEndpoints(apiDto));
+        Assert.assertFalse(PublisherCommonUtils.validateEndpoints(new APIDTOWrapper(apiDto)));
     }
 
     @Test
@@ -347,7 +348,7 @@ public class PublisherCommonUtilsTest {
         Mockito.when(advertiseInfoDto.getApiExternalProductionEndpoint()).thenReturn(externalProductionEndpointString);
         PowerMockito.mockStatic(APIUtil.class);
         PowerMockito.when(APIUtil.validateEndpointURLs(endpoints)).thenReturn(true);
-        Assert.assertTrue(PublisherCommonUtils.validateEndpoints(apiDto));
+        Assert.assertTrue(PublisherCommonUtils.validateEndpoints(new APIDTOWrapper(apiDto)));
     }
 
     @Test
@@ -375,7 +376,7 @@ public class PublisherCommonUtilsTest {
         Mockito.when(apiDto.getAdvertiseInfo()).thenReturn(null);
         PowerMockito.mockStatic(APIUtil.class);
         PowerMockito.when(APIUtil.validateEndpointURLs(endpoints)).thenReturn(true);
-        Assert.assertTrue(PublisherCommonUtils.validateEndpoints(apiDto));
+        Assert.assertTrue(PublisherCommonUtils.validateEndpoints(new APIDTOWrapper(apiDto)));
     }
 
     @Test
@@ -414,7 +415,7 @@ public class PublisherCommonUtilsTest {
         Mockito.when(advertiseInfoDto.getOriginalDevPortalUrl()).thenReturn(originalDevPortalUrl);
         PowerMockito.mockStatic(APIUtil.class);
         PowerMockito.when(APIUtil.validateEndpointURLs(endpoints)).thenReturn(true);
-        Assert.assertTrue(PublisherCommonUtils.validateEndpoints(apiDto));
+        Assert.assertTrue(PublisherCommonUtils.validateEndpoints(new APIDTOWrapper(apiDto)));
     }
 
     /**
@@ -429,22 +430,22 @@ public class PublisherCommonUtilsTest {
         LinkedHashMap<Object, Object> endpointConfigs = new LinkedHashMap<>();
         apiDTO.setEndpointConfig(endpointConfigs);
         endpointConfigs.put(PublisherCommonUtils.SESSION_TIMEOUT_CONFIG_KEY, 300);
-        boolean flag = PublisherCommonUtils.validateEndpointConfigs(apiDTO);
+        boolean flag = PublisherCommonUtils.validateEndpointConfigs(new APIDTOWrapper(apiDTO));
         Assert.assertTrue(flag);
         endpointConfigs.put(PublisherCommonUtils.SESSION_TIMEOUT_CONFIG_KEY, "300");
-        flag = PublisherCommonUtils.validateEndpointConfigs(apiDTO);
+        flag = PublisherCommonUtils.validateEndpointConfigs(new APIDTOWrapper(apiDTO));
         Assert.assertTrue(flag);
         endpointConfigs.put(PublisherCommonUtils.SESSION_TIMEOUT_CONFIG_KEY, "300e");
-        flag = PublisherCommonUtils.validateEndpointConfigs(apiDTO);
+        flag = PublisherCommonUtils.validateEndpointConfigs(new APIDTOWrapper(apiDTO));
         Assert.assertFalse(flag);
         endpointConfigs.put(PublisherCommonUtils.SESSION_TIMEOUT_CONFIG_KEY, "300.0");
-        flag = PublisherCommonUtils.validateEndpointConfigs(apiDTO);
+        flag = PublisherCommonUtils.validateEndpointConfigs(new APIDTOWrapper(apiDTO));
         Assert.assertFalse(flag);
         endpointConfigs.put(PublisherCommonUtils.SESSION_TIMEOUT_CONFIG_KEY, "sdwed");
-        flag = PublisherCommonUtils.validateEndpointConfigs(apiDTO);
+        flag = PublisherCommonUtils.validateEndpointConfigs(new APIDTOWrapper(apiDTO));
         Assert.assertFalse(flag);
         endpointConfigs.put(PublisherCommonUtils.SESSION_TIMEOUT_CONFIG_KEY, "1000000000000000000000000000000000");
-        flag = PublisherCommonUtils.validateEndpointConfigs(apiDTO);
+        flag = PublisherCommonUtils.validateEndpointConfigs(new APIDTOWrapper(apiDTO));
         Assert.assertFalse(flag);
 
     }
