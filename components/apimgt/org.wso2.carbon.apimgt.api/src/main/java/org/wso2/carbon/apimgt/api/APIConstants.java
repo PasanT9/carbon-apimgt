@@ -45,6 +45,16 @@ public class APIConstants {
     public static final String ENDPOINT_SECURITY_SANDBOX = "sandbox";
     public static final String ENDPOINT_CONFIG_SESSION_TIMEOUT = "sessionTimeOut";
 
+    public enum SupportedHTTPVerbs {
+        GET,
+        POST,
+        PUT,
+        DELETE,
+        PATCH,
+        HEAD,
+        OPTIONS
+    }
+
     public static class AIAPIConstants {
         public static final int MILLISECONDS_IN_SECOND = 1000;
         public static final String LLM_PROVIDERS = "llmProviders";
@@ -120,5 +130,6 @@ public class APIConstants {
         public static final String DEFAULT_SANDBOX_ENDPOINT_NAME = "DEFAULT SANDBOX ENDPOINT";
         public static final String ENDPOINT_SEQUENCE = "_EndpointsSeq";
         public static final String REQUEST_TIMEOUT = "REQUEST_TIMEOUT";
+        public static final String QUERY_API_TYPE_MCP = "type:MCP";
     }
 }
