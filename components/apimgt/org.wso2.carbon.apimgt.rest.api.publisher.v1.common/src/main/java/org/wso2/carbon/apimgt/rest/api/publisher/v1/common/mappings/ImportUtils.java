@@ -786,15 +786,19 @@ public class ImportUtils {
                     importedApiDTO.monetization(oldDTO.getMonetization());
                     importedApiDTO.setTags(oldDTO.getTags());
                 }
-
                 final API apiToUpdate = PublisherCommonUtils
                         .prepareForUpdateApi(targetApi, importedApiDTO, apiProvider, tokenScopes);
-
-                final List<Backend> backendList = getMCPServerBackends(extractedFolderPath);
-                for (Backend backend : backendList) {
-                    apiProvider.updateMCPServerBackend(targetApi.getUuid(), backend, organization);
+                List<Backend> existingBackends = apiProvider.getMCPServerBackends(targetApi.getUuid(), organization);
+                List<Backend> importedBackends = getMCPServerBackends(extractedFolderPath);
+                if (existingBackends.isEmpty() || importedBackends.isEmpty()) {
+                    throw new APIManagementException("No backends found to update for API: " + targetApi.getUuid());
                 }
+                Backend oldBackend = existingBackends.get(0);
+                Backend importedBackend = importedBackends.get(0);
+                Backend newBackend = new Backend(oldBackend);
+                newBackend.setEndpointConfig(importedBackend.getEndpointConfig());
 
+                apiProvider.updateMCPServerBackend(targetApi.getUuid(), oldBackend, newBackend, organization);
                 apiProvider.updateAPI(apiToUpdate, targetApi);
                 importedApi = apiProvider.getAPIbyUUID(targetApi.getUuid(), organization);
 

@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.phase.PhaseInterceptorChain;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.wso2.carbon.apimgt.api.APIComplianceException;
 import org.wso2.carbon.apimgt.api.APIManagementException;
@@ -122,12 +123,14 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.validation.Valid;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import static org.wso2.carbon.apimgt.api.ExceptionCodes.API_VERSION_ALREADY_EXISTS;
 import static org.wso2.carbon.apimgt.api.APIConstants.AIAPIConstants.QUERY_API_TYPE_MCP;
+import static org.wso2.carbon.apimgt.impl.APIConstants.ENDPOINT_SECURITY_TYPE;
 
 /**
  * Implementation of the MCP Servers API service.
@@ -2080,19 +2083,27 @@ public class McpServersApiServiceImpl implements McpServersApiService {
     public Response updateMCPServerBackend(String mcpServerId, String backendApiId, BackendDTO backendAPIDTO,
                                            MessageContext messageContext) throws APIManagementException {
 
-        APIProvider apiProvider = RestApiCommonUtil.getLoggedInUserProvider();
-        CommonUtils.validateAPIExistence(mcpServerId);
-        String organization = RestApiUtil.getValidatedOrganization(messageContext);
-        Backend backend = apiProvider.getMCPServerBackend(mcpServerId, backendApiId, organization);
-
-        if (backend == null) {
-            RestApiUtil.handleResourceNotFoundError(RestApiConstants.RESOURCE_MCP_SERVER, mcpServerId, log);
-        } else {
-            backend.setEndpointConfig(backendAPIDTO.getEndpointConfig().toString());
+        try {
+            APIProvider apiProvider = RestApiCommonUtil.getLoggedInUserProvider();
+            CommonUtils.validateAPIExistence(mcpServerId);
+            String organization = RestApiUtil.getValidatedOrganization(messageContext);
+            Backend oldBackend = apiProvider.getMCPServerBackend(mcpServerId, backendApiId, organization);
+            if (oldBackend == null) {
+                RestApiUtil.handleResourceNotFoundError(RestApiConstants.RESOURCE_MCP_SERVER, mcpServerId, log);
+            }
+            Backend newBackend = new Backend(oldBackend);
+            newBackend.setEndpointConfig(backendAPIDTO.getEndpointConfig().toString());
+            prepareForEndpointSecurity(newBackend, oldBackend);
+            apiProvider.updateMCPServerBackend(mcpServerId, oldBackend, newBackend, organization);
+            return Response.ok().entity(APIMappingUtil.fromBackendAPIToDTO(newBackend, organization, false)).build();
+        } catch (ParseException e) {
+            String errorMessage = "Error while parsing endpoint config of MCP server: " + mcpServerId;
+            RestApiUtil.handleBadRequest(errorMessage, e, log);
+        } catch (CryptoException e) {
+            String errorMessage = "Error while encrypting endpoint security information of MCP server: " + mcpServerId;
+            RestApiUtil.handleBadRequest(errorMessage, e, log);
         }
-        apiProvider.updateMCPServerBackend(mcpServerId, backend, organization);
-        return Response.ok().entity(APIMappingUtil.fromBackendAPIToDTO(backend, organization,
-                false)).build();
+        return null;
     }
 
     /**
@@ -2393,5 +2404,97 @@ public class McpServersApiServiceImpl implements McpServersApiService {
         apidto.setContext(existingAPI.getContextTemplate());
         apidto.setVersion(newVersion);
         return apidto;
+    }
+
+    /**
+     * Prepares the new backend API for endpoint security by encrypting OAuth and API key information.
+     *
+     * @param newBackend the new backend API to be prepared
+     * @param oldBackend the old backend API to retrieve existing security information
+     * @throws ParseException         if there is an error parsing the endpoint configuration
+     * @throws APIManagementException if there is an error in API management operations
+     * @throws CryptoException        if there is an error in cryptographic operations
+     */
+    private void prepareForEndpointSecurity(Backend newBackend, Backend oldBackend)
+            throws ParseException, APIManagementException, CryptoException {
+
+        JSONParser parser = new JSONParser();
+        JSONObject oldEndpointConfig = null;
+        String oldEndpointConfigString = oldBackend.getEndpointConfig();
+        if (StringUtils.isNotBlank(oldEndpointConfigString)) {
+            oldEndpointConfig = (JSONObject) parser.parse(oldEndpointConfigString);
+        }
+        String oldProductionApiSecret = null;
+        String oldSandboxApiSecret = null;
+
+        String oldProductionApiKeyValue = null;
+        String oldSandboxApiKeyValue = null;
+        Object oldProductionCustomParams = null;
+        Object oldSandboxCustomParams = null;
+
+        if (oldEndpointConfig != null) {
+            if ((oldEndpointConfig.containsKey(APIConstants.ENDPOINT_SECURITY))) {
+                JSONObject oldEndpointSecurity = (JSONObject) oldEndpointConfig.get(APIConstants.ENDPOINT_SECURITY);
+                if (oldEndpointSecurity != null &&
+                        oldEndpointSecurity.containsKey(APIConstants.OAuthConstants.ENDPOINT_SECURITY_PRODUCTION)) {
+                    JSONObject oldEndpointSecurityProduction = (JSONObject) oldEndpointSecurity
+                            .get(APIConstants.OAuthConstants.ENDPOINT_SECURITY_PRODUCTION);
+
+                    if (oldEndpointSecurityProduction.get(APIConstants.OAuthConstants.OAUTH_CLIENT_ID) != null
+                            && oldEndpointSecurityProduction.get(APIConstants.OAuthConstants.OAUTH_CLIENT_SECRET)
+                            != null) {
+                        oldProductionApiSecret = oldEndpointSecurityProduction
+                                .get(APIConstants.OAuthConstants.OAUTH_CLIENT_SECRET).toString();
+                    } else if (oldEndpointSecurityProduction
+                            .get(APIConstants.ENDPOINT_SECURITY_API_KEY_IDENTIFIER) != null
+                            && oldEndpointSecurityProduction.get(APIConstants.ENDPOINT_SECURITY_API_KEY_VALUE) != null
+                            && oldEndpointSecurityProduction
+                            .get(APIConstants.ENDPOINT_SECURITY_API_KEY_IDENTIFIER_TYPE) != null) {
+                        oldProductionApiKeyValue = oldEndpointSecurityProduction
+                                .get(APIConstants.ENDPOINT_SECURITY_API_KEY_VALUE).toString();
+                    }
+                    if (oldEndpointSecurityProduction.containsKey(
+                            APIConstants.OAuthConstants.OAUTH_CUSTOM_PARAMETERS) && oldEndpointSecurityProduction.get(
+                            APIConstants.OAuthConstants.OAUTH_CUSTOM_PARAMETERS) != null) {
+                        oldProductionCustomParams = parser.parse(
+                                oldEndpointSecurityProduction.get(APIConstants.OAuthConstants.OAUTH_CUSTOM_PARAMETERS)
+                                        .toString());
+                    }
+                }
+                if (oldEndpointSecurity != null &&
+                        oldEndpointSecurity.containsKey(APIConstants.OAuthConstants.ENDPOINT_SECURITY_SANDBOX)) {
+                    JSONObject oldEndpointSecuritySandbox = (JSONObject) oldEndpointSecurity
+                            .get(APIConstants.OAuthConstants.ENDPOINT_SECURITY_SANDBOX);
+
+                    if (oldEndpointSecuritySandbox.get(APIConstants.OAuthConstants.OAUTH_CLIENT_ID) != null
+                            && oldEndpointSecuritySandbox.get(APIConstants.OAuthConstants.OAUTH_CLIENT_SECRET)
+                            != null) {
+                        oldSandboxApiSecret = oldEndpointSecuritySandbox
+                                .get(APIConstants.OAuthConstants.OAUTH_CLIENT_SECRET).toString();
+                    } else if (oldEndpointSecuritySandbox.get(APIConstants.ENDPOINT_SECURITY_API_KEY_IDENTIFIER) != null
+                            && oldEndpointSecuritySandbox.get(APIConstants.ENDPOINT_SECURITY_API_KEY_VALUE) != null
+                            && oldEndpointSecuritySandbox
+                            .get(APIConstants.ENDPOINT_SECURITY_API_KEY_IDENTIFIER_TYPE) != null) {
+                        oldSandboxApiKeyValue = oldEndpointSecuritySandbox
+                                .get(APIConstants.ENDPOINT_SECURITY_API_KEY_VALUE).toString();
+                    }
+                    if (oldEndpointSecuritySandbox.containsKey(
+                            APIConstants.OAuthConstants.OAUTH_CUSTOM_PARAMETERS) && oldEndpointSecuritySandbox.get(
+                            APIConstants.OAuthConstants.OAUTH_CUSTOM_PARAMETERS) != null) {
+                        oldSandboxCustomParams = parser.parse(
+                                oldEndpointSecuritySandbox.get(APIConstants.OAuthConstants.OAUTH_CUSTOM_PARAMETERS)
+                                        .toString());
+                    }
+                }
+            }
+        }
+        CryptoUtil cryptoUtil = CryptoUtil.getDefaultCryptoUtil();
+
+        PublisherCommonUtils.encryptEndpointSecurityOAuthInternal(newBackend.getEndpointConfigAsMap(), cryptoUtil,
+                oldProductionApiSecret, oldSandboxApiSecret, oldProductionCustomParams, oldSandboxCustomParams,
+                newBackend::setEndpointConfigFromMap);
+
+        PublisherCommonUtils.encryptApiKeyInternal(newBackend.getEndpointConfigAsMap(), cryptoUtil,
+                oldProductionApiKeyValue, oldSandboxApiKeyValue, newBackend::setEndpointConfigFromMap);
     }
 }
