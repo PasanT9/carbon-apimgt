@@ -65,10 +65,12 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -92,6 +94,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -985,6 +988,18 @@ public class OASParserUtil {
     @UsedByMigrationClient
     public static APIDefinitionValidationResponse validateAPIDefinition(String apiDefinition, boolean returnJsonContent)
             throws APIManagementException {
+
+        final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
+        // --- Size validation ---
+        if (apiDefinition != null) {
+            long sizeInBytes = apiDefinition.getBytes(StandardCharsets.UTF_8).length;
+            if (sizeInBytes > MAX_FILE_SIZE) {
+                throw new APIManagementException(
+                        "The provided API definition exceeds the maximum allowed size of 10 MB.");
+            }
+        }
+
         String apiDefinitionProcessed = apiDefinition;
         if (!apiDefinition.trim().startsWith("{")) {
             try {
@@ -1150,7 +1165,29 @@ public class OASParserUtil {
                                                                              boolean returnJsonContent)
             throws APIManagementException {
         APIDefinitionValidationResponse validationResponse = new APIDefinitionValidationResponse();
+        final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
         try {
+
+            HttpHead headRequest = new HttpHead(url);
+            HttpResponse headResponse = httpClient.execute(headRequest);
+
+            if (headResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                org.apache.http.Header lengthHeader = headResponse.getFirstHeader(HttpHeaders.CONTENT_LENGTH);
+                if (lengthHeader != null) {
+                    try {
+                        long contentLength = Long.parseLong(lengthHeader.getValue());
+                        if (contentLength > MAX_FILE_SIZE) {
+                            throw new APIManagementException(
+                                    "The OpenAPI definition at the provided URL exceeds the maximum allowed size of 10 MB.");
+                        }
+                    } catch (NumberFormatException e) {
+                        log.warn("Invalid Content-Length header for URL: " + url);
+                    }
+                } else {
+                    log.debug("Content-Length header not found for URL: " + url + ". Skipping pre-validation.");
+                }
+            }
+
             HttpGet httpGet = new HttpGet(url);
             HttpResponse response = httpClient.execute(httpGet);
 
