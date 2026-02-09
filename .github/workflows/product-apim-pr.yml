@@ -36,19 +36,21 @@ jobs:
           token: ${{ secrets.PRODUCT_APIM_PUSH_TOKEN }}
           path: product-apim
 
-      - name: Update carbon.apimgt.version in product-apim
+      - name: Update carbon.apimgt.version in product-apim (all poms)
         shell: bash
         run: |
           set -euo pipefail
       
           FILES=(
-            "product-apim/api-control-plane/pom.xml"
-            "product-apim/gateway/pom.xml"
-            "product-apim/traffic-manager/pom.xml"
-            "product-apim/all-in-one-apim/pom.xml"
+            "api-control-plane/pom.xml"
+            "gateway/pom.xml"
+            "traffic-manager/pom.xml"
+            "all-in-one-apim/pom.xml"
           )
       
-          for FILE in "${FILES[@]}"; do
+          for REL in "${FILES[@]}"; do
+            FILE="product-apim/${REL}"
+      
             if [[ ! -f "$FILE" ]]; then
               echo "ERROR: File not found: $FILE"
               exit 1
@@ -64,7 +66,7 @@ jobs:
           done
       
           echo "Diff:"
-          git -C product-apim diff -- "${FILES[@]/#/../}"
+          git -C product-apim diff -- "${FILES[@]}"
 
       - name: Create Pull Request in product-apim
         uses: peter-evans/create-pull-request@v6
