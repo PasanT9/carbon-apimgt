@@ -1,9 +1,8 @@
-name: Create PR in product-apim to bump carbon-apimgt version (personal test)
-
+name: API-M Product PR
 on:
   push:
     tags:
-      - "*" # later you can narrow this to release tags only
+      - "*"
 
 permissions:
   contents: read
@@ -36,7 +35,7 @@ jobs:
           token: ${{ secrets.PRODUCT_APIM_PUSH_TOKEN }}
           path: product-apim
 
-      - name: Update carbon.apimgt.version in product-apim (all poms)
+      - name: Update carbon.apimgt.version in product-apim
         shell: bash
         run: |
           set -euo pipefail
