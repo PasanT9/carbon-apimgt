@@ -40,14 +40,13 @@ jobs:
         shell: bash
         run: |
           FILE="product-apim/all-in-one-apim/pom.xml"
-
-          if ! grep -q "<carbon.apimgt.version>" "$FILE"; then
-            echo "ERROR: <carbon.apimgt.version> not found"
-            exit 1
-          fi
-
-          sed -i "s#<carbon\.apimgt\.version>[^<]*</carbon\.apimgt\.version>#<carbon.apimgt.version>${{ env.VERSION }}</carbon.apimgt.version>#g" "$FILE"
+      
+          echo "VERSION is: $VERSION"
+      
+          sed -i "s#<carbon\.apimgt\.version>[^<]*</carbon\.apimgt\.version>#<carbon.apimgt.version>${VERSION}</carbon.apimgt.version>#g" "$FILE"
+      
           git -C product-apim diff -- "$FILE"
+
 
 
       - name: Create Pull Request in personal product-apim
