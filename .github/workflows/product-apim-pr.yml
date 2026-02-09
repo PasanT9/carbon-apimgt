@@ -41,22 +41,14 @@ jobs:
         run: |
           FILE="product-apim/all-in-one-apim/pom.xml"
 
-          if [[ ! -f "$FILE" ]]; then
-            echo "Expected file not found: $FILE"
+          if ! grep -q "<carbon.apimgt.version>" "$FILE"; then
+            echo "ERROR: <carbon.apimgt.version> not found"
             exit 1
           fi
 
-          # Replace <carbon.apimgt.version>...</carbon.apimgt.version>
-          perl -0777 -i -pe 's#(<carbon\.apimgt\.version>)[^<]*(</carbon\.apimgt\.version>)#${1}'"$ENV{VERSION}"'${2}#g' "$FILE"
-
-          echo "Diff:"
+          sed -i "s#<carbon\.apimgt\.version>[^<]*</carbon\.apimgt\.version>#<carbon.apimgt.version>${{ env.VERSION }}</carbon.apimgt.version>#g" "$FILE"
           git -C product-apim diff -- "$FILE"
 
-          # Fail if nothing changed (to avoid creating empty PRs)
-          if git -C product-apim diff --quiet -- "$FILE"; then
-            echo "No change detected (version already set?). Skipping PR."
-            exit 0
-          fi
 
       - name: Create Pull Request in personal product-apim
         uses: peter-evans/create-pull-request@v6
