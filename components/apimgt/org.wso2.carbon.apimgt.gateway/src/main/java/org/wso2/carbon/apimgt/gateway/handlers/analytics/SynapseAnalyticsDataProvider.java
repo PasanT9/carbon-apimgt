@@ -81,6 +81,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS;
+import static org.apache.synapse.rest.RESTConstants.REST_SUB_REQUEST_PATH;
 import static org.wso2.carbon.apimgt.gateway.APIMgtGatewayConstants.API_OBJECT;
 import static org.wso2.carbon.apimgt.gateway.APIMgtGatewayConstants.API_ELECTED_RESOURCE;
 import static org.wso2.carbon.apimgt.gateway.handlers.analytics.Constants.MASK_VALUE;
@@ -284,6 +285,10 @@ public class SynapseAnalyticsDataProvider implements AnalyticsDataProvider {
 
         String httpMethod = (String) messageContext.getProperty(APIMgtGatewayConstants.HTTP_METHOD);
         String apiResourceTemplate = (String) messageContext.getProperty(APIConstants.API_ELECTED_RESOURCE);
+        // If path is invalid, the elected resource is not set in the message context.
+        if (apiResourceTemplate == null) {
+            apiResourceTemplate = (String) messageContext.getProperty(REST_SUB_REQUEST_PATH);
+        }
         Operation operation = new Operation();
         operation.setApiMethod(httpMethod);
         if (APIConstants.GRAPHQL_API.equalsIgnoreCase(getApi().getApiType())) {
@@ -600,11 +605,12 @@ public class SynapseAnalyticsDataProvider implements AnalyticsDataProvider {
             mcpAnalytics.put(APIMgtGatewayConstants.MCP_SESSION_ID, sessionId);
         }
 
-        mcpAnalytics.put(Constants.MCP_METHOD, messageContext.getProperty(APIMgtGatewayConstants.MCP_METHOD));
-
-        String capability = (String) messageContext.getProperty(APIMgtGatewayConstants.MCP_HTTP_METHOD_KEY);
-        if (capability != null) {
-            mcpAnalytics.put(APIMgtGatewayConstants.MCP_CAPABILITY, capability);
+        String method = (String) messageContext.getProperty(APIMgtGatewayConstants.MCP_METHOD);
+        if (method != null) {
+            mcpAnalytics.put(Constants.MCP_METHOD, method);
+            if (APIMgtGatewayConstants.MCP_TOOL_CALL.equals(method)) {
+                mcpAnalytics.put(APIMgtGatewayConstants.MCP_CAPABILITY, APIMgtGatewayConstants.TOOL);
+            }
         }
 
         String capabilityName = (String) messageContext.getProperty(APIMgtGatewayConstants.MCP_CAPABILITY_NAME_KEY);
